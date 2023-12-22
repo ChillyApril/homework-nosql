@@ -13,6 +13,7 @@ public class RateLimiter {
   private final String label;
   private final long maxRequestCount;
   private final long timeWindowSeconds;
+  private long counter;
 
   public RateLimiter(Jedis redis, String label, long maxRequestCount, long timeWindowSeconds) {
     this.redis = redis;
@@ -22,8 +23,13 @@ public class RateLimiter {
   }
 
   public boolean pass() {
-    // TODO: Implementation
-    return false;
+    if (this.redis.dbSize() == 0) {
+      counter = 0;
+    }
+    counter += 1;
+    this.redis.set(Long.toString(counter), "a");
+    this.redis.expire(Long.toString(counter), timeWindowSeconds);
+    return this.redis.dbSize() < this.maxRequestCount;
   }
 
   public static void main(String[] args) {
