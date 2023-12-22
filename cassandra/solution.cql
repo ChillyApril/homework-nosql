@@ -10,6 +10,9 @@ create table my_ks.posts(
     PRIMARY KEY (user_id, created_at, post_id)
 ) with clustering order by (created_at desc, post_id asc);
 
+select (post_id, content, created_at) from my_ks.posts where user_id = 1;
+select (post_id, content, created_at, username) from my_ks.posts where user_id = 1 limit 1;
+select (post_id, content, created_at, username) from my_ks.posts where (user_id = 1) and (created_at > '2024-01-01 00:00:00');
 create table my_ks.publications (
     user_id int,
     post_id int,
